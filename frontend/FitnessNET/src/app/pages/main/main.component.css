@@ -1,0 +1,12 @@
+.feed-container {
+    padding: 20px;
+  
+    .post {
+      border: 1px solid #ff0000; /* Red */
+      border-radius: 8px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #ffffff; /* White */
+    }
+  }
+  

@@ -10,12 +10,12 @@ namespace FitnessNET.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly FitnessNetContext _dbContext;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationController(FitnessNetContext dbContext, IConfiguration configuration)
+        public AuthController(FitnessNetContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _configuration = configuration;

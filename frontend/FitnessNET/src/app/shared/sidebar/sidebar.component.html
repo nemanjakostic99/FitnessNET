@@ -1,0 +1,11 @@
+<div class="sidebar">
+    <h3>Connections</h3>
+    <ul>
+      <li *ngFor="let user of connections">
+        <img [src]="user.profilePicture || defaultProfilePicture" alt="Profile Picture" />
+        <span>{{ user.name }}</span>
+        <button (click)="onConnect(user)">Message</button>
+      </li>
+    </ul>
+  </div>
+  
