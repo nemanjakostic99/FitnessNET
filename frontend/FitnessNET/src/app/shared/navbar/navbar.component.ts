@@ -1,11 +1,23 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from '../../_services/auth.service';
+
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  isLoggedIn = false;
+  username = '';
 
+  constructor(public dialog: MatDialog, private authService: AuthService) {}
+
+  onLogout() {
+    this.authService.logout();
+  }
 }
+

@@ -33,11 +33,13 @@ namespace FitnessNET.Controllers
             // Create a new user with a hashed password
             var newUser = new ClientProfile
             {
-                Name = request.Username,
+                Name = request.Name,
                 Surname = request.Surname,
-                IsTrainer = request.IsTrainer,  
                 Username = request.Username,
+                IsTrainer = request.IsTrainer,  
                 Email = request.Email,
+                Height = request.Height,
+                Weight = request.Weight,
                 PasswordHash = PasswordHelper.HashPassword(request.Password)
             };
 
@@ -51,7 +53,7 @@ namespace FitnessNET.Controllers
         public async Task<IActionResult> Login([FromBody] ClientLoginRequest request)
         {
             // Find the user by email
-            var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Email == request.Username);
+             var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Username == request.Username);
             if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
             {
                 return Unauthorized("Invalid email or password.");

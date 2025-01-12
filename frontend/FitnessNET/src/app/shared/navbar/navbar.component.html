@@ -1,7 +1,17 @@
-<nav mat-toolbar class="navbar">
-    <a routerLink="/main" class="nav-link">Main</a>
-    <a routerLink="/personal" class="nav-link">Personal</a>
-    <a routerLink="/diet" class="nav-link">Diet</a>
-    <a routerLink="/training" class="nav-link">Training</a>
+<nav class="navbar">
+    <div class="logo">
+      <a routerLink="/">FitnessNET</a>
+    </div>
+    
+    <div class="nav-links">
+      <a routerLink="/main" routerLinkActive="active">Main</a>
+      <a routerLink="/personal" routerLinkActive="active">Personal</a>
+      <a routerLink="/diet" routerLinkActive="active">Diet</a>
+      <a routerLink="/training" routerLinkActive="active">Training</a>
+    </div>
+
+    <div class="logout">
+        <button class="logoutButton"(click)="onLogout()">Logout</button>  
+    </div>
 </nav>
   

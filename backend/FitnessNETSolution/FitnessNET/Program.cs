@@ -11,10 +11,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Configure(builder.Configuration.GetSection("Kestrel"));
+});
 builder.Services.AddDbContext<FitnessNetContext>(options => 
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-var app = builder.Build();
+// CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularFrontend",
+        policy => policy.WithOrigins("http://localhost:4200") 
+                        .AllowAnyMethod() 
+                        .AllowAnyHeader() 
+                        .AllowCredentials()); 
+});
 
 // JWT configuration
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
@@ -40,12 +52,16 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAngularFrontend");
 
 app.UseHttpsRedirection();
 

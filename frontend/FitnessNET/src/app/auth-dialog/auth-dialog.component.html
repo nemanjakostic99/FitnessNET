@@ -1,0 +1,66 @@
+<div class="login-container">
+    <div class="login-box">
+      <div class="tabs">
+        <button [class.active]="isLogin" (click)="toggleView(true)">Login</button>
+        <button [class.active]="!isLogin" (click)="toggleView(false)">Register</button>
+      </div>
+  
+      <!-- Login Form -->
+      <form *ngIf="isLogin">
+        <div>
+          <label for="email">Username</label>
+          <input type="username" id="loginUsername" #loginUsername required />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="loginPassword" #loginPassword required />
+        </div>
+        <button type="submit" (click)="onLogin(loginUsername, loginPassword)">Login</button>
+      </form>
+  
+      <!-- Register Form -->
+      <form *ngIf="!isLogin">
+        <div>
+          <label for="username">Username</label>
+          <input type="text" id="username" #username required />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" #email required />
+        </div>
+        <div>
+          <label for="name">First Name</label>
+          <input type="text" id="name" #name required />
+        </div>
+        <div>
+          <label for="surname">Last Name</label>
+          <input type="text" id="surname" #surname required />
+        </div>
+        <div>
+          <label for="gender">Gender</label>
+          <select id="gender" #gender required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div>
+          <label for="height">Height (cm)</label>
+          <input type="number" id="height" #height required />
+        </div>
+        <div>
+          <label for="weight">Weight (kg)</label>
+          <input type="number" id="weight" #weight required />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" #password required />
+        </div>
+        <div>
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" #confirmPassword required />
+        </div>
+        <button type="submit" (click)="onRegister(username, email, name, surname, gender, height, weight, password, confirmPassword)">Register</button>
+      </form>
+    </div>
+  </div>
+  
