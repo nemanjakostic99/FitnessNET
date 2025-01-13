@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../_services/auth.service';
@@ -11,6 +11,8 @@ import { AuthService } from '../../_services/auth.service';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  @Output() logoutEvent = new EventEmitter<void>();
+  
   isLoggedIn = false;
   username = '';
 
@@ -18,6 +20,7 @@ export class NavbarComponent {
 
   onLogout() {
     this.authService.logout();
+    this.logoutEvent.emit();
   }
 }
 

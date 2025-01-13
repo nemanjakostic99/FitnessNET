@@ -6,7 +6,7 @@
       </div>
   
       <!-- Login Form -->
-      <form *ngIf="isLogin">
+      <div class="form" *ngIf="isLogin">
         <div>
           <label for="email">Username</label>
           <input type="username" id="loginUsername" #loginUsername required />
@@ -15,11 +15,11 @@
           <label for="password">Password</label>
           <input type="password" id="loginPassword" #loginPassword required />
         </div>
-        <button type="submit" (click)="onLogin(loginUsername, loginPassword)">Login</button>
-      </form>
+        <button type="button" (click)="onLogin(loginUsername, loginPassword)">Login</button>
+      </div>
   
       <!-- Register Form -->
-      <form *ngIf="!isLogin">
+      <div class="form" *ngIf="!isLogin" >
         <div>
           <label for="username">Username</label>
           <input type="text" id="username" #username required />
@@ -52,6 +52,13 @@
           <input type="number" id="weight" #weight required />
         </div>
         <div>
+          <label for="gender">Are you trainer?</label>
+          <select id="gender" #isTrainer required>
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        <div>
           <label for="password">Password</label>
           <input type="password" id="password" #password required />
         </div>
@@ -59,8 +66,8 @@
           <label for="confirmPassword">Confirm Password</label>
           <input type="password" id="confirmPassword" #confirmPassword required />
         </div>
-        <button type="submit" (click)="onRegister(username, email, name, surname, gender, height, weight, password, confirmPassword)">Register</button>
-      </form>
+        <button (click)="onRegister(username, email, name, surname, gender, height, weight, isTrainer, password, confirmPassword)">Register</button>
+      </div>
     </div>
   </div>
   

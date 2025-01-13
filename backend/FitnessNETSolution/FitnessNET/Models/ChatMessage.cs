@@ -5,7 +5,7 @@ namespace FitnessNET.Models
 {
     public class ChatMessage
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }
 

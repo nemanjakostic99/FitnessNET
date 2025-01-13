@@ -3,9 +3,10 @@ export class RegisterForm {
     email: string;
     name: string;
     surname: string;
-    gender: string;
+    gender: number;
     height: number;
     weight: number;
+    isTrainer: boolean;
     password: string;
   
     constructor(
@@ -13,9 +14,10 @@ export class RegisterForm {
       email: string = '',
       name: string = '',
       surname: string = '',
-      gender: string = 'Male',
+      gender: number = 0,
       height: number = 0,
       weight: number = 0,
+      isTrainer: boolean = false,
       password: string = ''
     ) {
       this.username = username;
@@ -25,6 +27,7 @@ export class RegisterForm {
       this.gender = gender;
       this.height = height;
       this.weight = weight;
+      this.isTrainer = isTrainer;
       this.password = password;
     }
   }

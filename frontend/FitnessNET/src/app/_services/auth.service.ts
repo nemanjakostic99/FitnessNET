@@ -30,8 +30,19 @@ export class AuthService {
   register(form: RegisterForm)
   : Observable<string> {
     const url = `${this.apiUrl}api/auth/register`;
+    const body = { 
+      "Username": form.username, 
+      "Email":form.email,
+      "Name": form.name,
+      "Surname": form.surname,
+      "Gender": form.gender,
+      "Height": form.height,
+      "Weight": form.weight,
+      "IsTrainer": form.isTrainer,
+      "Password": form.password 
+    };
 
-    return this.http.post<{ token: string }>(url, form).pipe(
+    return this.http.post<{ token: string }>(url, body).pipe(
       map(response => response.token) // Extract the JWT token
     );
   }
@@ -50,4 +61,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('fitnessNetjwt');
   }
+
+  isLoggedIn(): boolean {
+    return localStorage.getItem('fitnessNetjwt') !== null;
+  }  
 }

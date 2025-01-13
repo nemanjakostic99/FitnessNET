@@ -10,7 +10,7 @@ namespace FitnessNET.Models
 
     public class ClientProfile
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }
 

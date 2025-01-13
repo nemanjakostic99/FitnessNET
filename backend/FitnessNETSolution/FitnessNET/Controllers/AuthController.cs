@@ -46,7 +46,24 @@ namespace FitnessNET.Controllers
             _dbContext.ClientProfiles.Add(newUser);
             await _dbContext.SaveChangesAsync();
 
-            return Ok("User registered successfully.");
+            var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Username == request.Username);
+            if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
+            {
+                return BadRequest("New user not saved");
+            }
+
+            // Generate JWT token
+            var token = JwtHelper.GenerateToken(
+                user,
+                _configuration["Jwt:Key"],
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"]
+            );
+
+            return Ok(new { 
+                Token = token, 
+                Message = "User registered successfully."
+            });
         }
 
         [HttpPost("login")]
@@ -56,7 +73,7 @@ namespace FitnessNET.Controllers
              var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Username == request.Username);
             if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
             {
-                return Unauthorized("Invalid email or password.");
+                return BadRequest("Invalid email or password.");
             }
 
             // Generate JWT token

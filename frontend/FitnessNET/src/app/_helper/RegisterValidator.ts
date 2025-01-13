@@ -23,7 +23,7 @@ export class RegisterValidator {
       }
   
       // Gender validation
-      const validGenders = ['Male', 'Female'];
+      const validGenders = [0, 1];
       if (!user.gender || !validGenders.includes(user.gender)) {
         return 'Gender must be either Male or Female.';
       }

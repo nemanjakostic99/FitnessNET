@@ -5,7 +5,7 @@ namespace FitnessNET.Models
 {
     public class TrainerClientMark
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }
 

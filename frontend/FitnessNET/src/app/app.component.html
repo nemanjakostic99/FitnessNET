@@ -1,8 +1,12 @@
-<app-auth-dialog *ngIf="!isLoggedIn"></app-auth-dialog>
+<app-auth-dialog 
+  *ngIf="!isLoggedIn"
+  [isLoggedIn]="isLoggedIn"
+  (loginStatusChanged)="handleLoginChange()">
+</app-auth-dialog>
 
 <div *ngIf="isLoggedIn">
   <div class="app-layout">
-    <app-navbar class="navbar"></app-navbar>
+    <app-navbar class="navbar" (logoutEvent)="handleLoginChange()"></app-navbar>
     <div class="main-content">
       <!-- <app-sidebar class="sidebar"></app-sidebar> -->
       <div class="content">

@@ -24,6 +24,14 @@ import { AuthService } from './_services/auth.service'; // Import your AuthServi
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+  constructor(private authService: AuthService) {
+    this.isLoggedIn = this.authService.isLoggedIn();
+  }
+  
   title = 'FitnessNET';
-  isLoggedIn = !!localStorage.getItem('fitnessNetjwt'); // Check if user is logged in
+  isLoggedIn: boolean;
+  
+  handleLoginChange(): void {
+    this.isLoggedIn = this.authService.isLoggedIn(); // Update isLoggedIn based on child component
+  }
 }

@@ -1,5 +1,5 @@
 import { NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { RegisterForm } from '../_models/registerForm';
 
@@ -11,6 +11,9 @@ import { RegisterForm } from '../_models/registerForm';
   imports: [NgIf]
 })
 export class AuthDialogComponent {
+  @Input() isLoggedIn!: boolean; // Receive variable from parent
+  @Output() loginStatusChanged = new EventEmitter<boolean>();
+
   constructor(private authService: AuthService) {}
 
   isLogin = true;
@@ -24,9 +27,11 @@ export class AuthDialogComponent {
       next: (token) => {
         this.authService.saveToken(token);
         alert('Login successful!');
+        this.isLoggedIn = true;
+        this.loginStatusChanged.emit(this.isLoggedIn);
       },
       error: (err) => {
-        alert('Login failed: ' + err.message);
+        alert('Login failed: ' + err.error);
       }
     });
   
@@ -43,6 +48,7 @@ export class AuthDialogComponent {
     gender: HTMLSelectElement,
     height: HTMLInputElement,
     weight: HTMLInputElement,
+    isTrainer: HTMLSelectElement,
     password: HTMLInputElement,
     confirmPassword: HTMLInputElement
   ): void {
@@ -51,12 +57,14 @@ export class AuthDialogComponent {
       return;
     }
 
-    var registerForm = new RegisterForm(username.value, email.value, name.value, surname.value, gender.value, +height.value, +weight.value, password.value)
+    var registerForm = new RegisterForm(username.value, email.value, name.value, surname.value, gender.value === "Male"? 0 : 1, +height.value, +weight.value, isTrainer.value === "true"? true : false, password.value)
 
     this.authService.register(registerForm).subscribe({
       next: (token) => {
         this.authService.saveToken(token);
         alert('Registration successful!');
+        this.isLoggedIn = true;
+        this.loginStatusChanged.emit(this.isLoggedIn);
       },
       error: (err) => {
         alert('Registration failed: ' + err.message);
