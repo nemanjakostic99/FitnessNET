@@ -3,19 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RegisterForm } from '../_models/registerForm';
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:5001/'; // Replace with your API endpoint
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   // Login method
   login(username: string, password: string): Observable<string> {
-    const url = `${this.apiUrl}api/auth/login`;
+    const url = `${this.apiUrl}/auth/login`;
     const body = { 
       "Username": username, 
       "Password": password 
@@ -29,7 +29,7 @@ export class AuthService {
   // Register method
   register(form: RegisterForm)
   : Observable<string> {
-    const url = `${this.apiUrl}api/auth/register`;
+    const url = `${this.apiUrl}/auth/register`;
     const body = { 
       "Username": form.username, 
       "Email":form.email,

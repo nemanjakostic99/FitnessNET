@@ -5,11 +5,12 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthDialogComponent } from './auth-dialog/auth-dialog.component';
-import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
-import { AuthService } from './_services/auth.service'; // Import your AuthService
+import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from './_services/auth.service';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [
     RouterOutlet, 
     NavbarComponent, 
@@ -19,9 +20,8 @@ import { AuthService } from './_services/auth.service'; // Import your AuthServi
     AuthDialogComponent, 
     HttpClientModule 
   ],
-  providers: [AuthService],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   constructor(private authService: AuthService) {
@@ -32,6 +32,6 @@ export class AppComponent {
   isLoggedIn: boolean;
   
   handleLoginChange(): void {
-    this.isLoggedIn = this.authService.isLoggedIn(); // Update isLoggedIn based on child component
+    this.isLoggedIn = this.authService.isLoggedIn();
   }
 }

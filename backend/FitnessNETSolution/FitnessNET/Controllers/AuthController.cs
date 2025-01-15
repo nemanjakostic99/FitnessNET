@@ -1,10 +1,6 @@
-﻿using FitnessNET.Data;
-using FitnessNET.Models;
-using FitnessNET.Models.Auth;
-using FitnessNET.Utils;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using FitnessNET.Models.Auth;
+using FitnessNET.Services;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace FitnessNET.Controllers
 {
@@ -12,79 +8,37 @@ namespace FitnessNET.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly FitnessNetContext _dbContext;
-        private readonly IConfiguration _configuration;
+        private readonly AuthService _authService;
 
-        public AuthController(FitnessNetContext dbContext, IConfiguration configuration)
+        public AuthController(AuthService authService)
         {
-            _dbContext = dbContext;
-            _configuration = configuration;
+            _authService = authService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] ClientRegisterRequest request)
         {
-            // Check if the email or username already exists
-            if (_dbContext.ClientProfiles.Any(u => u.Email == request.Email || u.Username == request.Username))
+            var (success, message, token) = await _authService.RegisterAsync(request);
+
+            if (!success)
             {
-                return BadRequest("Email or Username already exists.");
+                return BadRequest(new { Message = message });
             }
 
-            // Create a new user with a hashed password
-            var newUser = new ClientProfile
-            {
-                Name = request.Name,
-                Surname = request.Surname,
-                Username = request.Username,
-                IsTrainer = request.IsTrainer,  
-                Email = request.Email,
-                Height = request.Height,
-                Weight = request.Weight,
-                PasswordHash = PasswordHelper.HashPassword(request.Password)
-            };
-
-            _dbContext.ClientProfiles.Add(newUser);
-            await _dbContext.SaveChangesAsync();
-
-            var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Username == request.Username);
-            if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
-            {
-                return BadRequest("New user not saved");
-            }
-
-            // Generate JWT token
-            var token = JwtHelper.GenerateToken(
-                user,
-                _configuration["Jwt:Key"],
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"]
-            );
-
-            return Ok(new { 
-                Token = token, 
-                Message = "User registered successfully."
-            });
+            return Ok(new { Token = token, Message = message });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] ClientLoginRequest request)
         {
-            // Find the user by email
-             var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Username == request.Username);
-            if (user == null || !PasswordHelper.VerifyPassword(request.Password, user.PasswordHash))
+            var (success, message, token) = await _authService.LoginAsync(request);
+
+            if (!success)
             {
-                return BadRequest("Invalid email or password.");
+                return BadRequest(new { Message = message });
             }
 
-            // Generate JWT token
-            var token = JwtHelper.GenerateToken(
-                user,
-                _configuration["Jwt:Key"],
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Audience"]
-            );
-
-            return Ok(new { Token = token });
+            return Ok(new { Token = token, Message = message });
         }
     }
 }

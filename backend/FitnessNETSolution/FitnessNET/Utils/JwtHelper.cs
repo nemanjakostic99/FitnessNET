@@ -12,6 +12,7 @@ namespace FitnessNET.Utils
         {
             var claims = new[]
             {
+            new Claim(JwtRegisteredClaimNames.Name, client.Username.ToString()),
             new Claim(JwtRegisteredClaimNames.Sub, client.ID.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, client.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())

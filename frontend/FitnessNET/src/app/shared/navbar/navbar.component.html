@@ -4,14 +4,31 @@
     </div>
     
     <div class="nav-links">
-      <a routerLink="/main" routerLinkActive="active">Main</a>
-      <a routerLink="/personal" routerLinkActive="active">Personal</a>
+      <a routerLink="/main" routerLinkActive="active">Feed</a>
       <a routerLink="/diet" routerLinkActive="active">Diet</a>
       <a routerLink="/training" routerLinkActive="active">Training</a>
     </div>
 
-    <div class="logout">
-        <button class="logoutButton"(click)="onLogout()">Logout</button>  
+    <div class="user-info">
+      <div class="profile-info">
+        <div class="user-name">{{currentUser.name}} {{currentUser.surname}}</div>
+        <div class="username">{{currentUser.username}}</div>
+      </div>
+      <div class="profile-pic-wrapper">
+        <div class="profile-pic-container">
+          <div *ngIf="!currentUser?.profilePicture" class="default-avatar">
+            {{ getInitials() }}
+          </div>
+          <img *ngIf="currentUser?.profilePicture" 
+               [src]="currentUser.profilePicture" 
+               alt="Profile picture"
+               class="profile-pic">
+        </div>
+        <div class="profile-dropdown">
+          <a (click)="navigateToProfile($event)">View Profile</a>
+          <a (click)="logout()" class="logout-link">Logout</a>
+        </div>
+      </div>
     </div>
 </nav>
   
