@@ -17,7 +17,7 @@ namespace FitnessNET.Services
             _configuration = configuration;
         }
 
-        public async Task<(bool Success, string Message, string Token)> RegisterAsync(ClientRegisterRequest request)
+        public async Task<(bool Success, string Message, string Token)> RegisterAsync(ClientRegisterRequestDTO request)
         {
             // Check if email or username already exists
             if (_dbContext.ClientProfiles.Any(u => u.Email == request.Email || u.Username == request.Username))
@@ -35,7 +35,9 @@ namespace FitnessNET.Services
                 Email = request.Email,
                 Height = request.Height,
                 Weight = request.Weight,
-                PasswordHash = PasswordHelper.HashPassword(request.Password)
+                PasswordHash = PasswordHelper.HashPassword(request.Password),
+                DateRegistered = DateTime.UtcNow,
+                LastActive = DateTime.UtcNow  
             };
 
             _dbContext.ClientProfiles.Add(newUser);
@@ -59,7 +61,7 @@ namespace FitnessNET.Services
             return (true, "User registered successfully.", token);
         }
 
-        public async Task<(bool Success, string Message, string Token)> LoginAsync(ClientLoginRequest request)
+        public async Task<(bool Success, string Message, string Token)> LoginAsync(ClientLoginRequestDTO request)
         {
             // Find user by username
             var user = _dbContext.ClientProfiles.SingleOrDefault(u => u.Username == request.Username);
@@ -75,6 +77,10 @@ namespace FitnessNET.Services
                 _configuration["Jwt:Issuer"],
                 _configuration["Jwt:Audience"]
             );
+
+
+            user.LastActive = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
 
             return (true, "Login successful.", token);
         }

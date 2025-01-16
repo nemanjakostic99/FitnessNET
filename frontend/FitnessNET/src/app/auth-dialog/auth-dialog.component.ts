@@ -1,7 +1,7 @@
 import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
-import { RegisterForm } from '../_models/registerForm';
+import { RegisterFormDTO } from '../_models/registerFormDTO';
 
 @Component({
   selector: 'app-auth-dialog',
@@ -57,7 +57,7 @@ export class AuthDialogComponent {
       return;
     }
 
-    var registerForm = new RegisterForm(username.value, email.value, name.value, surname.value, gender.value === "Male"? 0 : 1, +height.value, +weight.value, isTrainer.value === "true"? true : false, password.value)
+    var registerForm = new RegisterFormDTO(username.value, email.value, name.value, surname.value, gender.value === "Male"? 0 : 1, +height.value, +weight.value, isTrainer.value === "true"? true : false, password.value)
 
     this.authService.register(registerForm).subscribe({
       next: (token) => {

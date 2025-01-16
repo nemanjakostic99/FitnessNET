@@ -2,7 +2,7 @@
 
 namespace FitnessNET.Models.Auth
 {
-    public class ClientLoginRequest
+    public class ClientLoginRequestDTO
     {
         [Required]
         public required string Username { get; set; }

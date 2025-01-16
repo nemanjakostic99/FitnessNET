@@ -1,8 +1,11 @@
 ﻿using FitnessNET.Data;
+using FitnessNET.Models;
 using FitnessNET.Models.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
+namespace FitnessNET.Services;
 public class UserService : IUserService
 {
     private readonly FitnessNetContext _dbContext;
@@ -49,5 +52,49 @@ public class UserService : IUserService
 
         //return Convert.FromBase64String(user.Description); // Example of a base64-encoded image
         return null;
+    }
+
+    public async Task<UserProfileDTO> GetUserProfileAsync(string username)
+    {
+        var user = await _dbContext.ClientProfiles.FirstOrDefaultAsync(u => u.Username == username);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        return new UserProfileDTO
+        { 
+            Name = user.Name,
+            Surname = user.Surname,
+            Username = user.Username,
+            Gender = user.Gender,
+            Description = user.Description, 
+            Email = user.Email, 
+            Height = user.Height,   
+            Weight = user.Weight    
+        };
+    }
+
+    public async Task<bool> UpdateUserProfileAsync(string username, UserProfileDTO updatedProfile)
+    {
+        var user = await _dbContext.ClientProfiles.FirstOrDefaultAsync(u => u.Username == username);
+
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        user.Name = updatedProfile.Name;
+        user.Surname = updatedProfile.Surname;
+        user.Email = updatedProfile.Email;
+        user.Gender = (Gender)updatedProfile.Gender; 
+        user.Height = updatedProfile.Height;
+        user.Weight = updatedProfile.Weight;
+        user.Description = updatedProfile.Description;  
+
+        _ = _dbContext.SaveChangesAsync();
+
+        return true;
     }
 }

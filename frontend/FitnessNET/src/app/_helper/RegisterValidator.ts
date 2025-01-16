@@ -1,4 +1,4 @@
-import { RegisterForm } from "../_models/registerForm";
+import { RegisterForm } from "../_models/registerFormDTO";
 
 export class RegisterValidator {
     static validate(user: RegisterForm

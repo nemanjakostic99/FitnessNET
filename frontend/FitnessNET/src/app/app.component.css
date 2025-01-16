@@ -2,16 +2,14 @@
 .app-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Full height of the viewport */
-  overflow: hidden; /* Prevents unwanted overflow */
+  min-height: 100vh;
 }
 
 /* Main content starts below the navbar */
 .main-content {
-  display: flex;
   flex: 1;
-  margin-top: 45px; /* Match navbar height */
-  overflow: hidden; /* Prevents overflow issues */
+  margin-top: 45px;
+  padding: 20px;
 }
 
 /* Sidebar styles */
@@ -25,8 +23,7 @@
 
 /* Content area */
 .content {
-  flex: 1;
-  margin-top: 50px; /* Match new navbar height */
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
-  overflow-y: auto;
 }

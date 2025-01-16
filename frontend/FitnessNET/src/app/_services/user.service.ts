@@ -26,13 +26,21 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/users/me`, { headers: this.getHeaders() });
   }
 
+  getProfile(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/users/profile`, { headers: this.getHeaders() });
+  }
+
   updateProfile(userData: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/users/profile`, userData, { headers: this.getHeaders() });
+    return this.http.put(`${this.apiUrl}/users/update-profile`, userData, { headers: this.getHeaders() });
   }
 
   updateProfilePicture(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('profilePicture', file);
     return this.http.put(`${this.apiUrl}/users/profile-picture`, formData, { headers: this.getHeaders() });
+  }
+
+  removeProfilePicture(): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/users/profile-picture`, { headers: this.getHeaders() });
   }
 } 

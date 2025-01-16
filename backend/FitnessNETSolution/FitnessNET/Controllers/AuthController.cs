@@ -16,7 +16,7 @@ namespace FitnessNET.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] ClientRegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] ClientRegisterRequestDTO request)
         {
             var (success, message, token) = await _authService.RegisterAsync(request);
 
@@ -29,7 +29,7 @@ namespace FitnessNET.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] ClientLoginRequest request)
+        public async Task<IActionResult> Login([FromBody] ClientLoginRequestDTO request)
         {
             var (success, message, token) = await _authService.LoginAsync(request);
 

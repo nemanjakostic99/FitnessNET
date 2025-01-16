@@ -1,7 +1,79 @@
-<div class="personal-container">
-    <h1>Personal Page</h1>
-    <p>Name: John Doe</p>
-    <p>Height: 180 cm</p>
-    <p>Weight: 75 kg</p>
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-picture">
+      <div *ngIf="!currentUser?.profilePicture" class="default-avatar">
+        {{ getInitials() }}
+      </div>
+      <img *ngIf="currentUser?.profilePicture" 
+           [src]="currentUser.profilePicture" 
+           alt="Profile Picture">
+      <div class="photo-options">
+        <input #fileInput type="file" 
+               accept=".jpg,.jpeg"
+               style="display: none;"
+               (change)="onFileSelected($event)">
+        <button (click)="fileInput.click()">Update Photo</button>
+        <button *ngIf="currentUser?.profilePicture" 
+                (click)="removePhoto()"
+                class="remove-btn">Remove</button>
+      </div>
+    </div>
+    <div class="profile-title">
+      <h1>{{ currentUser?.name }} {{ currentUser?.surname }}</h1>
+      <p class="username">{{ currentUser?.username }}</p>
+    </div>
+    <button class="edit-btn" (click)="toggleEdit()">
+      {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+    </button>
   </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" formControlName="name" [readonly]="!isEditing">
+      </div>
+
+      <div class="form-group">
+        <label>Surname</label>
+        <input type="text" formControlName="surname" [readonly]="!isEditing">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" [readonly]="!isEditing">
+      </div>
+
+      <div class="form-group">
+        <label>Gender</label>
+        <select formControlName="gender" [disabled]="!isEditing">
+          <option [ngValue]="0">Male</option>
+          <option [ngValue]="1">Female</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Height (cm)</label>
+        <input type="number" formControlName="height" [readonly]="!isEditing">
+      </div>
+
+      <div class="form-group">
+        <label>Weight (kg)</label>
+        <input type="number" formControlName="weight" [readonly]="!isEditing">
+      </div>
+
+      <div class="form-group description">
+        <label>About me</label>
+        <textarea formControlName="description" 
+                  [readonly]="!isEditing"
+                  rows="4"
+                  placeholder="Tell us about yourself..."></textarea>
+      </div>
+    </div>
+
+    <div class="form-actions" *ngIf="isEditing">
+      <button type="submit" [disabled]="!profileForm.valid">Save Changes</button>
+    </div>
+  </form>
+</div>
   
