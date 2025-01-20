@@ -54,9 +54,14 @@ namespace FitnessNET.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task DeleteProfilePictureAsync(string username)
+        public async Task<bool?> DeleteProfilePictureAsync(string username)
         {
-            await _profilePicturesCollection.DeleteOneAsync(p => p.Username == username);
+            var result = await _profilePicturesCollection.DeleteOneAsync(p => p.Username == username);
+
+            if (result != null)
+                return true;
+
+            return false;
         }
     }
 }

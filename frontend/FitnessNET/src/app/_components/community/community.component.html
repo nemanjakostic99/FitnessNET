@@ -1,0 +1,82 @@
+<div class="community-container">
+  <header class="community-header">
+    <h1>Community</h1>
+    <div class="filters">
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === null"
+        (click)="onFilterChange('all')">
+        All
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === true"
+        (click)="onFilterChange('trainers')">
+        Trainers
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="activeFilter === false"
+        (click)="onFilterChange('users')">
+        Users
+      </button>
+    </div>
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        (input)="onSearch($event)"
+        placeholder="Search by name, specialization, or interests..."
+        class="search-input"
+      >
+    </div>
+  </header>
+
+  <div class="community-grid">
+    <div *ngIf="isLoading && !users.length" class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading users...</p>
+    </div>
+
+    <div 
+      class="user-card" 
+      *ngFor="let user of users" 
+      [class.trainer-card]="user.isTrainer">
+      <div class="user-avatar">
+        <img 
+            [src]="getProfilePictureUrl(user.profilePicture)" 
+            [alt]="user.name"
+            (error)="handleImageError($event)">
+      </div>
+      <h3>{{user.name}} {{user.surname}}</h3>
+      <p class="username">{{user.username}}</p>
+      <p class="user-type">{{user.isTrainer ? 'Trainer' : 'Member'}}</p>
+      
+      <ng-container *ngIf="user.isTrainer">
+        <div class="rating">
+          <i *ngFor="let star of [1,2,3,4,5]" 
+             class="fas fa-star"
+             [class.filled]="star <= user.rating!">
+          </i>
+          <span class="rating-value">{{user.rating!.toFixed(1)}}</span>
+        </div>
+        <p class="trainer-description">
+          {{user.description}}
+        </p>
+      </ng-container>
+      
+      <p *ngIf="!user.isTrainer" class="user-info">{{user.description}}</p>
+      <button class="connect-btn">Connect</button>
+    </div>
+
+    <div *ngIf="currentPage < totalPages" class="load-more">
+      <button 
+        (click)="loadMore()" 
+        [disabled]="isLoading"
+        class="load-more-btn">
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        {{isLoading ? 'Loading...' : 'Load More'}}
+      </button>
+    </div>
+  </div>
+</div> 

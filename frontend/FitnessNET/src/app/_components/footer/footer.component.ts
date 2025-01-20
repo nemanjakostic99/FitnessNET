@@ -25,7 +25,7 @@ import { RouterModule } from '@angular/router';
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 FitnessNET. All rights reserved.</p>
+        <p>&copy; 2025 FitnessNET. All rights reserved.</p>
       </div>
     </footer>
   `,

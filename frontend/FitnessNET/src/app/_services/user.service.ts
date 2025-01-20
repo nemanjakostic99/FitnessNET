@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
+import { PaginatedResponse } from '../_models/paginated-response.interface';
+import { CommunityUser } from '../_models/community-user.interface';
+
+interface UserSearchParams {
+  page: number;
+  pageSize: number;
+  searchTerm?: string;
+  isTrainer: boolean | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +39,13 @@ export class UserService {
     return this.http.get(`${this.apiUrl}/users/profile`, { headers: this.getHeaders() });
   }
 
+  getProfilePicture(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/users/profile-picture`, { 
+      headers: this.getHeaders(),
+      responseType: 'blob'
+    });
+  }
+
   updateProfile(userData: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/users/update-profile`, userData, { headers: this.getHeaders() });
   }
@@ -42,5 +58,30 @@ export class UserService {
 
   removeProfilePicture(): Observable<any> {
     return this.http.delete(`${this.apiUrl}/users/profile-picture`, { headers: this.getHeaders() });
+  }
+
+  searchUsers(params: UserSearchParams): Observable<PaginatedResponse<CommunityUser>> {
+    const queryParams = new HttpParams()
+      .set('page', params.page.toString())
+      .set('pageSize', params.pageSize.toString())
+      .set('searchTerm', params.searchTerm || '')
+      .set('isTrainer', params.isTrainer === null ? '' : params.isTrainer.toString());
+
+    return this.http.get<PaginatedResponse<CommunityUser>>(`${this.apiUrl}/users/searchUsers`, {
+      headers: this.getHeaders(),
+      params: queryParams
+    });
+  }
+
+  getFriends(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/friends`, { headers: this.getHeaders() });
+  }
+
+  getTrainers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/trainers`, { headers: this.getHeaders() });
+  }
+
+  getFriendRequests(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/friend-requests`, { headers: this.getHeaders() });
   }
 } 

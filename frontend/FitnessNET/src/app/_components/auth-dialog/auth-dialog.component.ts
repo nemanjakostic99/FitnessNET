@@ -1,7 +1,7 @@
 import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AuthService } from '../_services/auth.service';
-import { RegisterFormDTO } from '../_models/registerFormDTO';
+import { AuthService } from '../../_services/auth.service';
+import { RegisterFormDTO } from '../../_models/registerFormDTO';
 
 @Component({
   selector: 'app-auth-dialog',

@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { MainComponent } from './pages/main/main.component';
-import { PersonalComponent } from './pages/personal/personal.component';
-import { DietComponent } from './pages/diet/diet.component';
-import { TrainingComponent } from './pages/training/training.component';
-import { CommunityComponent } from './features/community/community.component';
+import { MainComponent } from './_components/pages/main/main.component';
+import { PersonalComponent } from './_components/pages/personal/personal.component';
+import { DietComponent } from './_components/pages/diet/diet.component';
+import { TrainingComponent } from './_components/pages/training/training.component';
+import { CommunityComponent } from './_components/community/community.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'main', pathMatch: 'full' },

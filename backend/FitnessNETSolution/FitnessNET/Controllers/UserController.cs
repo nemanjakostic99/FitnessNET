@@ -72,7 +72,7 @@ namespace FitnessNET.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateProfile([FromBody] UserProfileDTO userProfileDTO)
         {
-            var username = User.FindFirst("name")?.Value; // todo User.Identity.Name 
+            var username = User.FindFirst("name")?.Value; 
 
             if (string.IsNullOrEmpty(username))
             {
@@ -88,27 +88,43 @@ namespace FitnessNET.Controllers
             return NotFound("User not found or somethig went wrong");
         }
 
-        [HttpPost("{username}/profile-picture")]
-        public async Task<IActionResult> UploadProfilePicture(string username, IFormFile file)
+        [HttpPut("profile-picture")]
+        [Authorize]
+        public async Task<IActionResult> UploadProfilePicture(IFormFile profilePicture)
         {
-            if (file == null || file.Length == 0)
+            var username = User.FindFirst("name")?.Value;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized("Username not found in token.");
+            }
+
+            if (profilePicture == null || profilePicture.Length == 0)
             {
                 return BadRequest("Invalid file.");
             }
 
-            using var memoryStream = new MemoryStream();
-            await file.CopyToAsync(memoryStream);
+            using var memoryStream = new MemoryStream();    
+            await profilePicture.CopyToAsync(memoryStream);
             var pictureData = memoryStream.ToArray();
 
-            await _mongoDbService.UploadProfilePictureAsync(username, pictureData, file.ContentType);
+            await _userService.UploadProfilePictureAsync(username, pictureData, profilePicture.ContentType);
 
             return Ok("Profile picture uploaded successfully.");
         }
 
-        [HttpGet("{username}/profile-picture")]
-        public async Task<IActionResult> GetProfilePicture(string username)
+        [HttpGet("profile-picture")]
+        [Authorize]
+        public async Task<IActionResult> GetProfilePicture()
         {
-            var picture = await _mongoDbService.GetProfilePictureAsync(username);
+            var username = User.FindFirst("name")?.Value;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized("Username not found in token.");
+            }
+
+            var picture = await _userService.GetProfilePictureAsync(username);
 
             if (picture == null)
             {
@@ -116,6 +132,60 @@ namespace FitnessNET.Controllers
             }
 
             return File(picture.PictureData, picture.ContentType);
+        }
+
+        [HttpDelete("profile-picture")]
+        [Authorize]
+        public async Task<IActionResult> DeleteProfilePicture()
+        {
+            var username = User.FindFirst("name")?.Value;
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized("Username not found in token.");
+            }
+
+            var result = await _userService.DeleteProfilePictureAsync(username);
+
+            if (result == null)
+            {
+                return NotFound("Profile picture not found.");
+            }
+
+            return Ok("Picture deleted");
+        }
+
+        [HttpGet("searchUsers")]
+        public async Task<ActionResult<PaginatedResult<UserInfoDTO>>> SearchUsers(
+            [FromQuery] string searchTerm = "",
+            [FromQuery] bool? isTrainer = null,
+            [FromQuery] int page = 1)
+        {
+            try
+            {
+                var currentUsername = User.FindFirst("name")?.Value;
+                if (currentUsername == null)
+                {
+                    return Unauthorized();
+                }
+
+                var result = await _userService.SearchUsersAsync(
+                    searchTerm,
+                    currentUsername,
+                    isTrainer,
+                    page,
+                    10);
+
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from './shared/navbar/navbar.component';
-import { SidebarComponent } from './shared/sidebar/sidebar.component';
-import { FooterComponent } from './shared/footer/footer.component';
+import { NavbarComponent } from './_components/navbar/navbar.component';
+import { SidebarComponent } from './_components/sidebar/sidebar.component';
+import { FooterComponent } from './_components/footer/footer.component';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthDialogComponent } from './auth-dialog/auth-dialog.component';
+import { AuthDialogComponent } from './_components/auth-dialog/auth-dialog.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from './_services/auth.service';
-import { ChatComponent } from './shared/components/chat/chat.component';
+import { ChatComponent } from './_components/chat_components/chat/chat.component';
 
 @Component({
   selector: 'app-root',

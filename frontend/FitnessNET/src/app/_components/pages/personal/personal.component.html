@@ -1,21 +1,43 @@
 <div class="profile-container">
   <div class="profile-header">
-    <div class="profile-picture">
-      <div *ngIf="!currentUser?.profilePicture" class="default-avatar">
+    <div class="profile-avatar">
+      <div *ngIf="!profilePicture" class="default-avatar">
         {{ getInitials() }}
       </div>
-      <img *ngIf="currentUser?.profilePicture" 
-           [src]="currentUser.profilePicture" 
+      <img *ngIf="profilePicture" 
+           [src]="profilePicture" 
            alt="Profile Picture">
-      <div class="photo-options">
+      <div class="photo-options" *ngIf="isEditing">
         <input #fileInput type="file" 
                accept=".jpg,.jpeg"
                style="display: none;"
-               (change)="onFileSelected($event)">
-        <button (click)="fileInput.click()">Update Photo</button>
-        <button *ngIf="currentUser?.profilePicture" 
+               (change)="onFileChange($event)">
+        <button (click)="fileInput.click()">
+          <i class="fas fa-camera"></i> Update
+        </button>
+        <button *ngIf="profilePicture !== 'assets/images/default-avatar.png'"
                 (click)="removePhoto()"
-                class="remove-btn">Remove</button>
+                class="remove-btn">
+          <i class="fas fa-trash"></i> Remove
+        </button>
+      </div>
+
+      <div class="cropper-modal" *ngIf="showCropper">
+        <div class="cropper-container">
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="true"
+            [aspectRatio]="1"
+            [roundCropper]="true"
+            format="jpeg"
+            outputType="base64"
+            (imageCropped)="imageCropped($event)"
+          ></image-cropper>
+          <div class="cropper-actions">
+            <button (click)="saveCroppedImage()">Save</button>
+            <button (click)="showCropper = false">Cancel</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="profile-title">

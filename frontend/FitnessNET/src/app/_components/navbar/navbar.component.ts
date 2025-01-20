@@ -14,6 +14,7 @@ import { NgIf } from '@angular/common';
 export class NavbarComponent implements OnInit {
   @Output() logoutEvent = new EventEmitter<void>();
   currentUser: any = null;
+  profilePicture: string = 'assets/images/default-avatar.png';
 
   getInitials(): string {
     if (this.currentUser?.name && this.currentUser?.surname) {
@@ -32,6 +33,7 @@ export class NavbarComponent implements OnInit {
     if (this.authService.isLoggedIn()) {
       this.loadUserData();
     }
+    this.loadProfilePicture();
   }
 
   private loadUserData() {
@@ -45,6 +47,23 @@ export class NavbarComponent implements OnInit {
     );
   }
 
+  private loadProfilePicture(): void {
+    this.userService.getProfilePicture().subscribe({
+      next: (blob: Blob) => {
+        if (blob.size > 0) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.profilePicture = reader.result as string;
+          };
+          reader.readAsDataURL(blob);
+        }
+      },
+      error: () => {
+        this.profilePicture = 'assets/images/default-avatar.png';
+      }
+    });
+  }
+
   navigateToProfile(event: Event) {
     event.preventDefault();
     this.router.navigate(['/personal']);
@@ -56,7 +75,7 @@ export class NavbarComponent implements OnInit {
   }
 
   onImageError(event: any) {
-    event.target.src = './default-avatar.png';
+    event.target.src = 'assets/images/default-avatar.png';
   }
 }
 

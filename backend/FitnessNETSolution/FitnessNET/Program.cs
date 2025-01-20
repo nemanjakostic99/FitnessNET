@@ -72,6 +72,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

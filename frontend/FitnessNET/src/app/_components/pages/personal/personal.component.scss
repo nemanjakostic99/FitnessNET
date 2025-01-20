@@ -12,86 +12,87 @@
     margin-bottom: 2rem;
     gap: 2rem;
 
-    .profile-picture {
-      position: relative;
-      width: 120px;
-      height: 120px;
+    .profile-avatar {
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       overflow: hidden;
+      position: relative;
       background-color: #f0f0f0;
-      
-      .default-avatar {
-        width: 100%;
-        height: 100%;
-        background-color: #4a90e2;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 2.5rem;
+      border: 3px solid #007bff;
+
+      &:hover .photo-options:not(.disabled) {
+        opacity: 1;
       }
 
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center;
+        display: block;
       }
 
-      .change-photo-btn {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0.7);
+      .default-avatar {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #4a90e2;
         color: white;
-        border: none;
-        padding: 0.5rem;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        white-space: nowrap;
+        font-weight: bold;
+        font-size: 2.5rem;
       }
 
       .photo-options {
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
         opacity: 0;
-        transition: opacity 0.2s;
-        border-radius: 50%;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+
+        &:not(.disabled) {
+          pointer-events: auto;
+        }
 
         button {
-          background: #4a90e2;
-          color: white;
-          border: none;
           padding: 0.5rem 1rem;
-          border-radius: 4px;
+          border: none;
+          border-radius: 20px;
+          background: #007bff;
+          color: white;
           cursor: pointer;
-          font-size: 0.8rem;
-          white-space: nowrap;
+          font-size: 0.9rem;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+          }
 
           &.remove-btn {
             background: #dc3545;
-          }
 
-          &:hover {
-            filter: brightness(110%);
+            &:hover {
+              background: #c82333;
+            }
           }
         }
       }
 
-      &:hover .photo-options {
-        opacity: 1;
+      span {
+        font-size: 2.5rem;
+        color: #666;
+        position: absolute;
       }
     }
 
@@ -239,4 +240,64 @@ select[disabled] {
   background: #f5f5f5;
   cursor: not-allowed;
   opacity: 1;
+}
+
+.cropper-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .cropper-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow: auto;
+
+    image-cropper {
+      width: 100%;
+      max-width: 500px;
+      height: 500px;
+    }
+
+    .cropper-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+
+      button {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        
+        &:first-child {
+          background: #007bff;
+          color: white;
+          
+          &:hover {
+            background: #0056b3;
+          }
+        }
+        
+        &:last-child {
+          background: #dc3545;
+          color: white;
+          
+          &:hover {
+            background: #c82333;
+          }
+        }
+      }
+    }
+  }
 } 

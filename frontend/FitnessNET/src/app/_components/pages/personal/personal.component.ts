@@ -1,20 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UserService } from '../../_services/user.service';
+import { UserService } from '../../../_services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-personal',
   templateUrl: './personal.component.html',
   styleUrls: ['./personal.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [CommonModule, ReactiveFormsModule, ImageCropperComponent]
 })
 export class PersonalComponent implements OnInit {
   profileForm: FormGroup;
   currentUser: any;
   isEditing = false;
+  profilePicture: string = 'assets/images/default-avatar.png';
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  showCropper = false;
 
   constructor(
     private fb: FormBuilder,
@@ -34,6 +39,7 @@ export class PersonalComponent implements OnInit {
 
   ngOnInit() {
     this.loadUserData();
+    this.loadProfilePicture();
   }
 
   loadUserData() {
@@ -85,21 +91,44 @@ export class PersonalComponent implements OnInit {
     return 'U';
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file && file.type.match(/image\/jpe?g/)) {
-      this.userService.updateProfilePicture(file).subscribe({
-        next: () => {
-          this.snackBar.open('Profile picture updated', 'Close', { duration: 3000 });
-          this.loadUserData();
-        },
-        error: (error) => {
-          this.snackBar.open('Error updating profile picture', 'Close', { duration: 3000 });
-        }
-      });
-    } else {
-      this.snackBar.open('Please select a JPEG image', 'Close', { duration: 3000 });
+  onFileChange(event: any): void {
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    this.croppedImage = event.blob;
+  }
+
+  saveCroppedImage() {
+    console.log('Saving cropped image...');
+    if (!this.croppedImage) {
+      this.snackBar.open('No image selected', 'Close', { duration: 3000 });
+      return;
     }
+
+    this.userService.updateProfilePicture(this.croppedImage).subscribe({
+      next: () => {
+        console.log('Profile picture updated successfully');
+        this.snackBar.open('Profile picture updated', 'Close', { duration: 3000 });
+        this.loadProfilePicture();
+        this.showCropper = false;
+      },
+      error: (err) => {
+        console.error('Error updating profile picture:', err);
+        this.snackBar.open('Error updating profile picture', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  private base64ToFile(base64: string, filename: string): File {
+    const byteString = atob(base64);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new File([ab], filename, { type: 'image/jpeg' });
   }
 
   removePhoto() {
@@ -110,6 +139,23 @@ export class PersonalComponent implements OnInit {
       },
       error: (error) => {
         this.snackBar.open('Error removing profile picture', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  private loadProfilePicture(): void {
+    this.userService.getProfilePicture().subscribe({
+      next: (blob: Blob) => {
+        if (blob.size > 0) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            this.profilePicture = reader.result as string;
+          };
+          reader.readAsDataURL(blob);
+        }
+      },
+      error: () => {
+        this.profilePicture = 'assets/images/default-avatar.png';
       }
     });
   }

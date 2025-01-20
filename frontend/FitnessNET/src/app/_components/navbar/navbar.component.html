@@ -16,11 +16,11 @@
       </div>
       <div class="profile-pic-wrapper">
         <div class="profile-pic-container">
-          <div *ngIf="!currentUser?.profilePicture" class="default-avatar">
+          <div *ngIf="!profilePicture" class="default-avatar">
             {{ getInitials() }}
           </div>
-          <img *ngIf="currentUser?.profilePicture" 
-               [src]="currentUser.profilePicture" 
+          <img *ngIf="profilePicture && profilePicture !== 'assets/images/default-avatar.png'" 
+               [src]="profilePicture" 
                alt="Profile picture"
                class="profile-pic">
         </div>
