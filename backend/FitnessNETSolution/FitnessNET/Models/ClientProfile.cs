@@ -51,5 +51,7 @@ namespace FitnessNET.Models
 
         public DateTime DateRegistered { get; set; }
         public DateTime LastActive { get; set; }
+
+        public ICollection<ClientProfile> Friends { get; set; } = new List<ClientProfile>();
     }
 }

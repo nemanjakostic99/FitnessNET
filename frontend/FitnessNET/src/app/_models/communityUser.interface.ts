@@ -7,6 +7,7 @@ export interface CommunityUser {
   isTrainer: boolean;
   rating: number | null;
   description: string;
+  isConnected: boolean;
   profilePicture?: {
     contentType: string;
     pictureData: string;

@@ -12,5 +12,7 @@ namespace FitnessNET.Data
         public DbSet<ClientProfile> ClientProfiles { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<TrainerClientMark> TrainerClientMarks { get; set; }
+
+        public DbSet<FriendRequest> FriendRequests { get; set; }
     }
 }

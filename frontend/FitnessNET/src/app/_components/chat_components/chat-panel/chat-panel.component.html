@@ -1,0 +1,155 @@
+<div class="chat-panel" [class.open]="isOpen">
+  <div class="chat-header">
+    <h2>Messages</h2>
+    <div class="tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'friends'"
+        (click)="onTabChange('friends')">
+        Friends
+      </button>
+      <button 
+        class="tab-btn"
+        [class.active]="activeTab === 'trainers'"
+        (click)="onTabChange('trainers')">
+        Trainers
+      </button>
+      <button 
+        class="tab-btn"
+        [class.active]="activeTab === 'requests'"
+        (click)="onTabChange('requests')">
+        Requests
+        <span class="request-badge" *ngIf="friendRequests.length">
+          {{friendRequests.length}}
+        </span>
+      </button>
+    </div>
+    <div class="search-box">
+      <input 
+        type="text" 
+        [placeholder]="'Search in ' + activeTab + '...'"
+        class="search-input"
+        (input)="onSearch($event)"
+      >
+    </div>
+  </div>
+
+  <div class="chat-content">
+    <div class="user-list">
+      <!-- Empty states -->
+      <div *ngIf="activeTab === 'friends' && !friends.length && !isLoading" class="empty-state">
+        <i class="fas fa-user-friends empty-icon"></i>
+        <p>No friends yet</p>
+        <a routerLink="/community" class="find-btn">Find Friends</a>
+      </div>
+
+      <div *ngIf="activeTab === 'trainers' && !trainers.length && !isLoading" class="empty-state">
+        <i class="fas fa-dumbbell empty-icon"></i>
+        <p>No trainers yet</p>
+        <a routerLink="/community" class="find-btn">Find Trainers</a>
+      </div>
+
+      <div *ngIf="activeTab === 'requests' && !friendRequests.length && !isLoading" class="empty-state">
+        <i class="fas fa-user-plus empty-icon"></i>
+        <p>No friend requests</p>
+      </div>
+
+      <!-- List items -->
+      <div class="user-item" 
+           *ngFor="let user of (activeTab === 'friends' ? friends : 
+                               activeTab === 'trainers' ? trainers : 
+                               friendRequests)">
+        <div class="user-avatar">
+          <img 
+            [src]="getProfilePictureUrl(user.profilePicture)" 
+            [alt]="user.name"
+            (error)="handleImageError($event)">
+        </div>
+        <div class="user-info">
+          <h3>{{user.name}} {{user.surname}}</h3>
+        </div>
+        <!-- Friend/Trainer Actions -->
+        <div class="action-buttons" *ngIf="activeTab !== 'requests'">
+          <button 
+            class="message-btn" 
+            title="Send message"
+            (click)="openChat(user)">
+            <i class="fas fa-comment"></i>
+          </button>
+          <button 
+            class="unfriend-btn" 
+            title="Remove friend"
+            (click)="removeFriend(user.username)">
+            <i class="fas fa-user-minus"></i>
+          </button>
+        </div>
+        <!-- Request Actions -->
+        <div class="action-buttons" *ngIf="activeTab === 'requests'">
+          <button 
+            class="accept-btn" 
+            title="Accept request"
+            (click)="acceptRequest(user.username)">
+            <i class="fas fa-check"></i>
+          </button>
+          <button 
+            class="decline-btn" 
+            title="Decline request"
+            (click)="declineRequest(user.username)">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading and Load More -->
+      <div class="loading-state" *ngIf="isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading...</p>
+      </div>
+
+      <button *ngIf="!isLoading && currentPage < totalPages[activeTab]" 
+              class="load-more-btn"
+              (click)="loadMore()">
+        Load More
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="chat-dialogs">
+  <div class="chat-dialog" 
+       *ngFor="let chat of activeChats"
+       [class.minimized]="chat.isMinimized">
+    <div class="chat-header" (click)="toggleChatMinimize(chat)">
+      <div class="user-avatar">
+        <img [src]="getProfilePictureUrl(chat.user.profilePicture)" 
+             [alt]="chat.user.name">
+      </div>
+      <span>{{chat.user.name}} {{chat.user.surname}}</span>
+      <div class="header-actions">
+        <button (click)="toggleChatMinimize(chat); $event.stopPropagation()">
+          <i class="fas" [class.fa-minus]="!chat.isMinimized" [class.fa-plus]="chat.isMinimized"></i>
+        </button>
+        <button (click)="closeChat(chat); $event.stopPropagation()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="chat-messages">
+      <!-- Messages will go here -->
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Type a message...">
+      <button>Send</button>
+    </div>
+  </div>
+</div>
+
+<div class="minimized-chats">
+  <div class="user-avatar" 
+       *ngFor="let chat of activeChats"
+       (click)="toggleChatMinimize(chat)"
+       [title]="chat.user.name">
+    <img [src]="getProfilePictureUrl(chat.user.profilePicture)" 
+         [alt]="chat.user.name">
+  </div>
+</div> 

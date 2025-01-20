@@ -29,7 +29,6 @@ namespace FitnessNET.Controllers
         [Authorize]
         public async Task<IActionResult> Me()
         {
-            // Extract the username from the authenticated user's claims
             var username = User.FindFirst("name")?.Value; // todo User.Identity.Name 
 
             if (string.IsNullOrEmpty(username))
@@ -44,14 +43,13 @@ namespace FitnessNET.Controllers
                 return Ok(userDTO);
             }
             return NotFound("User not found or somethig went wrong");
-
         }
 
         [HttpGet("profile")]
         [Authorize]
         public async Task<IActionResult> Profile()
         {
-            var username = User.FindFirst("name")?.Value; // todo User.Identity.Name 
+            var username = User.FindFirst("name")?.Value; 
 
             if (string.IsNullOrEmpty(username))
             {

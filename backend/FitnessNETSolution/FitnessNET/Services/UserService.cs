@@ -199,12 +199,14 @@ public class UserService : IUserService
             foreach (var u in usersList)
             {
                 var profilePicture = await _mongoDbService.GetProfilePictureAsync(u.Username);
+                bool isConnected = user.Friends.Contains(u);
                 users.Add(new UserInfoDTO
                 {
                     Username = u.Username,
                     Name = u.Name,
                     Surname = u.Surname,
                     Gender = u.Gender.ToString(),
+                    IsConnected = isConnected,
                     ProfilePicture = profilePicture == null ? null : new ProfilePictureDTO 
                     { 
                         PictureData = profilePicture.PictureData,
@@ -227,5 +229,15 @@ public class UserService : IUserService
             _logger.LogError(ex, "Error searching users with term: {SearchTerm}", searchTerm);
             throw new ApplicationException("Failed to search users", ex);
         }
+    }
+
+    public async Task<ClientProfile> getUserByUsernameAsync(string username)
+    {
+        return await this._dbContext.ClientProfiles.Where(u => u.Username == username).FirstAsync();
+    }
+
+    internal bool AreUsersFriends(ClientProfile sender, ClientProfile receiver)
+    {
+        throw new NotImplementedException();
     }
 }

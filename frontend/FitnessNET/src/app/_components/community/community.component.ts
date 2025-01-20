@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CommunityUser } from '../../_models/community-user.interface';
+import { CommunityUser } from '../../_models/communityUser.interface';
 import { UserService } from '../../_services/user.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { FriendshipService } from '../../_services/friendship.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-community',
@@ -23,7 +25,11 @@ export class CommunityComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private friendshipService: FriendshipService,
+    private snackBar: MatSnackBar
+  ) {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -95,5 +101,22 @@ export class CommunityComponent implements OnInit, OnDestroy {
   handleImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.src = 'assets/images/default-avatar.png';
+  }
+
+  sendFriendRequest(senderUsername: string) {
+    this.friendshipService.sendFriendRequest(senderUsername).subscribe({
+      next: () => {
+        this.snackBar.open('Friend request sent successfully', 'Close', {
+          duration: 3000
+        });
+      },
+      error: (error) => {
+        this.snackBar.open(
+          error.error?.message || 'Failed to send friend request',
+          'Close',
+          { duration: 3000 }
+        );
+      }
+    });
   }
 } 

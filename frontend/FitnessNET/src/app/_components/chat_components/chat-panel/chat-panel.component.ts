@@ -2,217 +2,182 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { UserService } from '../../../_services/user.service';
+import { CommunityUser } from '../../../_models/communityUser.interface';
+import { FriendshipService } from '../../../_services/friendship.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { FriendRequestDTO } from '../../../_models/friendRequestDTO';
+import { ChatDialog } from '../../../_models/chatDialog.interface';
 
 @Component({
   selector: 'app-chat-panel',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  template: `
-    <div class="chat-panel" [class.open]="isOpen">
-      <div class="chat-header">
-        <h2>Messages</h2>
-        <div class="tabs">
-          <button 
-            class="tab-btn" 
-            [class.active]="activeTab === 'friends'"
-            (click)="activeTab = 'friends'">
-            Friends
-          </button>
-          <button 
-            class="tab-btn"
-            [class.active]="activeTab === 'trainers'"
-            (click)="activeTab = 'trainers'">
-            Trainers
-          </button>
-        </div>
-        <div class="search-box">
-          <input 
-            type="text" 
-            placeholder="Search in {{activeTab}}..." 
-            class="search-input"
-          >
-        </div>
-      </div>
-
-      <div class="chat-content">
-        <div class="user-list">
-          <div *ngIf="activeTab === 'friends' && !hasConnections" class="empty-state">
-            <i class="fas fa-user-friends empty-icon"></i>
-            <p>No friends yet</p>
-            <a routerLink="/community" class="find-btn">Find Friends</a>
-          </div>
-          <div *ngIf="activeTab === 'trainers' && !hasConnections" class="empty-state">
-            <i class="fas fa-dumbbell empty-icon"></i>
-            <p>No trainers yet</p>
-            <a routerLink="/community" class="find-btn">Find Trainers</a>
-          </div>
-          <div class="user-item" *ngFor="let i of [1,2,3,4,5]">
-            <div class="user-avatar"></div>
-            <div class="user-info">
-              <h3>User {{i}}</h3>
-              <p>Status: Online</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .chat-panel {
-      position: fixed;
-      top: 64px;
-      right: -400px;
-      width: 400px;
-      height: calc(100vh - 64px);
-      background: white;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-      transition: right 0.3s ease;
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid #eee;
-
-      &.open {
-        right: 0;
-      }
-    }
-
-    .chat-header {
-      padding: 1rem;
-      border-bottom: 1px solid #eee;
-
-      h2 {
-        margin: 0 0 1rem;
-        color: #333;
-      }
-    }
-
-    .tabs {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      justify-content: center;
-    }
-
-    .tab-btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      background: #f5f5f5;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: #e5e5e5;
-      }
-
-      &.active {
-        background: #007bff;
-        color: white;
-      }
-    }
-
-    .search-box {
-      margin-bottom: 1rem;
-
-      .search-input {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-
-        &:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-      }
-    }
-
-    .chat-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem;
-    }
-
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .user-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.75rem;
-      border-radius: 8px;
-      background: #f8f9fa;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: #e9ecef;
-      }
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #dee2e6;
-    }
-
-    .user-info {
-      h3 {
-        margin: 0;
-        font-size: 1rem;
-        color: #333;
-      }
-
-      p {
-        margin: 0;
-        font-size: 0.875rem;
-        color: #6c757d;
-      }
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      text-align: center;
-      color: #6c757d;
-
-      .empty-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: #dee2e6;
-      }
-
-      p {
-        margin: 0 0 1rem;
-      }
-
-      .find-btn {
-        padding: 0.5rem 1rem;
-        background: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 20px;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background: #0056b3;
-          transform: translateY(-1px);
-        }
-      }
-    }
-  `]
+  templateUrl: './chat-panel.component.html',
+  styleUrls: ['./chat-panel.component.scss']
 })
 export class ChatPanelComponent {
   @Input() isOpen = false;
-  activeTab: 'friends' | 'trainers' = 'friends';
-  hasConnections = false; // This will be connected to a service later
+  activeTab: 'friends' | 'trainers' | 'requests' = 'friends';
+  friends: CommunityUser[] = [];
+  trainers: CommunityUser[] = [];
+  friendRequests: FriendRequestDTO[] = [];
+  
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = { friends: 0, trainers: 0, requests: 0 };
+  searchTerm = '';
+  isLoading = false;
+  activeChats: ChatDialog[] = [];
+
+  constructor(
+    private userService: UserService,
+    private friendshipService: FriendshipService,
+    private snackBar: MatSnackBar
+  ) {
+    this.loadConnections();
+  }
+
+  loadConnections(append = false) {
+    const params = {
+      page: this.currentPage,
+      pageSize: this.pageSize,
+      searchTerm: this.searchTerm,
+      isTrainer: null
+    };
+
+    this.isLoading = true;
+
+    if (this.activeTab === 'friends') {
+      this.friendshipService.searchFriends(params).subscribe(response => {
+        this.friends = append ? [...this.friends, ...response.items] : response.items;
+        this.totalPages.friends = response.totalPages;
+        this.isLoading = false;
+      });
+    } else if (this.activeTab === 'trainers') {
+      this.friendshipService.searchTrainers(params).subscribe(response => {
+        this.trainers = append ? [...this.trainers, ...response.items] : response.items;
+        this.totalPages.trainers = response.totalPages;
+        this.isLoading = false;
+      });
+    } else {
+      this.friendshipService.searchFriendRequests(params).subscribe(response => {
+        this.friendRequests = append ? [...this.friendRequests, ...response.items] : response.items;
+        this.totalPages.requests = response.totalPages;
+        this.isLoading = false;
+      });
+    }
+  }
+
+  onTabChange(tab: 'friends' | 'trainers' | 'requests') {
+    this.activeTab = tab;
+    this.currentPage = 1;
+    this.loadConnections();
+  }
+
+  loadMore() {
+    if (this.isLoading) return;
+    this.currentPage++;
+    this.loadConnections(true);
+  }
+
+  onSearch(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.searchTerm = target.value;
+    this.currentPage = 1;
+    this.loadConnections();
+  }
+
+  acceptRequest(senderUsername: string) {
+    this.friendshipService.acceptFriendRequest(senderUsername).subscribe({
+      next: () => {
+        this.snackBar.open('Friend request accepted', 'Close', {
+          duration: 3000
+        });
+        this.loadConnections(); // Reload the lists
+      },
+      error: (error) => {
+        this.snackBar.open(
+          error.error?.message || 'Failed to accept request',
+          'Close',
+          { duration: 3000 }
+        );
+      }
+    });
+  }
+
+  declineRequest(senderUsername: string) {
+    this.friendshipService.deleteFriendRequest(senderUsername).subscribe({
+      next: () => {
+        this.snackBar.open('Friend request declined', 'Close', {
+          duration: 3000
+        });
+        this.loadConnections(); // Reload the lists
+      },
+      error: (error) => {
+        this.snackBar.open(
+          error.error?.message || 'Failed to decline request',
+          'Close',
+          { duration: 3000 }
+        );
+      }
+    });
+  }
+
+  getProfilePictureUrl(profilePicture: any): string {
+    if (!profilePicture || !profilePicture.pictureData) {
+      return 'assets/images/default-avatar.png';
+    }
+    return `data:${profilePicture.contentType};base64,${profilePicture.pictureData}`;
+  }
+
+  handleImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/default-avatar.png';
+  }
+
+  openChat(user: CommunityUser) {
+    // Check if chat already exists
+    const existingChat = this.activeChats.find(chat => chat.user.username === user.username);
+    if (existingChat) {
+      existingChat.isMinimized = false;
+      return;
+    }
+
+    // Create new chat
+    this.activeChats.push({
+      user,
+      isMinimized: false,
+      messages: []
+    });
+  }
+
+  toggleChatMinimize(chat: ChatDialog) {
+    chat.isMinimized = !chat.isMinimized;
+  }
+
+  closeChat(chat: ChatDialog) {
+    const index = this.activeChats.indexOf(chat);
+    if (index > -1) {
+      this.activeChats.splice(index, 1);
+    }
+  }
+
+  removeFriend(username: string) {
+    this.friendshipService.removeFriend(username).subscribe({
+      next: () => {
+        this.snackBar.open('Friend removed', 'Close', {
+          duration: 3000
+        });
+        this.loadConnections();
+      },
+      error: (error) => {
+        this.snackBar.open(
+          error.error?.message || 'Failed to remove friend',
+          'Close',
+          { duration: 3000 }
+        );
+      }
+    });
+  }
 } 

@@ -3,8 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-import { PaginatedResponse } from '../_models/paginated-response.interface';
-import { CommunityUser } from '../_models/community-user.interface';
+import { PaginatedResponse } from '../_models/paginatedResponse.interface';
+import { CommunityUser } from '../_models/communityUser.interface';
 
 interface UserSearchParams {
   page: number;
@@ -71,17 +71,5 @@ export class UserService {
       headers: this.getHeaders(),
       params: queryParams
     });
-  }
-
-  getFriends(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users/friends`, { headers: this.getHeaders() });
-  }
-
-  getTrainers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users/trainers`, { headers: this.getHeaders() });
-  }
-
-  getFriendRequests(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users/friend-requests`, { headers: this.getHeaders() });
   }
 } 
