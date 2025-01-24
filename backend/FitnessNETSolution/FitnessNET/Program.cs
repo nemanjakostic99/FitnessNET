@@ -1,4 +1,5 @@
 using FitnessNET.Data;
+using FitnessNET.Hubs;
 using FitnessNET.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<FriendshipService>();
+builder.Services.AddScoped<MessageService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
 builder.WebHost.ConfigureKestrel(options =>
@@ -67,6 +70,19 @@ builder.Services.AddAuthentication(options =>
             context.Response.StatusCode = 403;
             context.Response.ContentType = "application/json";
             return context.Response.WriteAsync("{\"error\":\"Access forbidden.\"}");
+        },
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            // Only extract the token for SignalR WebSocket connections
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
         }
     };
 });
@@ -88,6 +104,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAngularFrontend");
 
 app.UseHttpsRedirection();
+app.MapHub<ChatHub>("/chatHub");
 
 app.UseAuthentication();
 app.UseAuthorization();

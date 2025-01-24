@@ -154,6 +154,7 @@ namespace FitnessNET.Controllers
         }
 
         [HttpGet("searchUsers")]
+        [Authorize]
         public async Task<ActionResult<PaginatedResult<UserInfoDTO>>> SearchUsers(
             [FromQuery] string searchTerm = "",
             [FromQuery] bool? isTrainer = null,

@@ -5,6 +5,7 @@ import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { RegisterFormDTO } from '../_models/registerFormDTO';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ import { RegisterFormDTO } from '../_models/registerFormDTO';
 export class AuthService {
   private apiUrl = environment.apiUrl;
   private tokenCheckInterval: any;
+  private jwtHelper = new JwtHelperService();
 
   constructor(
     private http: HttpClient,
@@ -82,7 +84,7 @@ export class AuthService {
   }
 
   // Retrieve the JWT token from localStorage
-  getToken(): string | null {
+  public getToken(): string | null {
     return localStorage.getItem('fitnessNetjwt');
   }
 
@@ -96,5 +98,13 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.getToken() !== null && !this.isTokenExpired();
-  }  
+  }
+
+  public getUsername(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    
+    const decodedToken = this.jwtHelper.decodeToken(token);
+    return decodedToken?.name || null;
+  }
 }

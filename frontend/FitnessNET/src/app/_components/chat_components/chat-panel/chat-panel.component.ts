@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -8,6 +8,9 @@ import { FriendshipService } from '../../../_services/friendship.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FriendRequestDTO } from '../../../_models/friendRequestDTO';
 import { ChatDialog } from '../../../_models/chatDialog.interface';
+import { ChatService } from '../../../_services/chat.service';
+import { Message } from '../../../_models/message.interface';
+import { AuthService } from '../../../_services/auth.service';
 
 @Component({
   selector: 'app-chat-panel',
@@ -16,7 +19,7 @@ import { ChatDialog } from '../../../_models/chatDialog.interface';
   templateUrl: './chat-panel.component.html',
   styleUrls: ['./chat-panel.component.scss']
 })
-export class ChatPanelComponent {
+export class ChatPanelComponent implements OnInit, OnDestroy {
   @Input() isOpen = false;
   activeTab: 'friends' | 'trainers' | 'requests' = 'friends';
   friends: CommunityUser[] = [];
@@ -33,9 +36,24 @@ export class ChatPanelComponent {
   constructor(
     private userService: UserService,
     private friendshipService: FriendshipService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private chatService: ChatService,
+    public authService: AuthService
   ) {
     this.loadConnections();
+    this.chatService.getMessageReceived().subscribe(message => {
+      if (message) {
+        this.handleReceivedMessage(message);
+      }
+    });
+  }
+
+  ngOnInit() {
+    // Additional initialization logic if needed
+  }
+
+  ngOnDestroy() {
+    // Cleanup logic if needed
   }
 
   loadConnections(append = false) {
@@ -136,20 +154,24 @@ export class ChatPanelComponent {
     img.src = 'assets/images/default-avatar.png';
   }
 
-  openChat(user: CommunityUser) {
-    // Check if chat already exists
-    const existingChat = this.activeChats.find(chat => chat.user.username === user.username);
+  openChat(user: CommunityUser | FriendRequestDTO) {
+    const chatUser: CommunityUser = 'sender' in user ? user.sender as CommunityUser : user as CommunityUser;
+    const existingChat = this.activeChats.find(chat => chat.user.username === chatUser.username);
     if (existingChat) {
       existingChat.isMinimized = false;
       return;
     }
 
-    // Create new chat
-    this.activeChats.push({
-      user,
+    const newChat: ChatDialog = {
+      user: chatUser,
       isMinimized: false,
-      messages: []
-    });
+      messages: [],
+      currentPage: 1,
+      totalPages: 1,
+      isLoading: false
+    };
+    this.activeChats.push(newChat);
+    this.loadMessages(newChat);
   }
 
   toggleChatMinimize(chat: ChatDialog) {
@@ -179,5 +201,66 @@ export class ChatPanelComponent {
         );
       }
     });
+  }
+
+  private handleReceivedMessage(message: Message) {
+    const chat = this.activeChats.find(c => 
+      (c.user.username === message.senderUsername && message.receiverUsername === this.authService.getUsername()) || 
+      (c.user.username === message.receiverUsername && message.senderUsername === this.authService.getUsername())
+    );
+    if (chat) {
+      chat.messages.push(message);
+      setTimeout(() => {
+        const messagesContainer = document.querySelector(`[data-username="${chat.user.username}"]`);
+        if (messagesContainer) {
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      });
+    }
+  }
+
+  loadMessages(chat: ChatDialog, append = false) {
+    if (chat.isLoading) return;
+    chat.isLoading = true;
+
+    this.chatService.getMessageHistory(chat.user.username, chat.currentPage, 20)
+      .subscribe({
+        next: (response) => {
+          const messages = response.items;
+          chat.messages = append 
+            ? [...messages.reverse(), ...chat.messages]
+            : messages.reverse();
+          chat.totalPages = response.totalPages;
+          chat.isLoading = false;
+        },
+        error: () => {
+          chat.isLoading = false;
+        }
+      });
+  }
+
+  loadMoreMessages(chat: ChatDialog) {
+    if (chat.currentPage < chat.totalPages) {
+      chat.currentPage++;
+      this.loadMessages(chat, true);
+    }
+  }
+
+  async sendMessage(chat: ChatDialog, input: HTMLInputElement) {
+    if (!input.value.trim()) return;
+
+    try {
+      await this.chatService.sendMessage(chat.user.username, input.value);
+      input.value = '';
+    } catch (error) {
+      this.snackBar.open('Failed to send message', 'Close', { duration: 3000 });
+    }
+  }
+
+  onScroll(event: Event, chat: ChatDialog) {
+    const element = event.target as HTMLElement;
+    if (element.scrollTop === 0 && !chat.isLoading && chat.currentPage < chat.totalPages) {
+      this.loadMoreMessages(chat);
+    }
   }
 } 

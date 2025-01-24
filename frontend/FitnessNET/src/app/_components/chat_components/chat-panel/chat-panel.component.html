@@ -73,7 +73,7 @@
           <button 
             class="message-btn" 
             title="Send message"
-            (click)="openChat(user)">
+            (click)="openChat(activeTab === 'friends' ? user : user)">
             <i class="fas fa-comment"></i>
           </button>
           <button 
@@ -134,12 +134,29 @@
         </button>
       </div>
     </div>
-    <div class="chat-messages">
-      <!-- Messages will go here -->
+    <div class="chat-messages" #messagesContainer
+        (scroll)="onScroll($event, chat)"
+        [attr.data-username]="chat.user.username">
+      <div class="loading-messages" *ngIf="chat.isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+      </div>
+      <div class="message" *ngFor="let message of chat.messages"
+           [class.own-message]="message.senderUsername === authService.getUsername()"
+           [class.friend-message]="message.senderUsername !== authService.getUsername()">
+        <div class="message-content">{{message.content}}</div>
+        <div class="message-time">
+          {{message.sentAt.toString() | date:'MMM d, h:mm a'}}
+          <span class="message-status" *ngIf="message.senderUsername === authService.getUsername()">
+            <i class="fas fa-check"></i>
+          </span>
+        </div>
+      </div>
     </div>
     <div class="chat-input">
-      <input type="text" placeholder="Type a message...">
-      <button>Send</button>
+      <input #messageInput type="text" 
+             placeholder="Type a message..."
+             (keyup.enter)="sendMessage(chat, messageInput)">
+      <button (click)="sendMessage(chat, messageInput)">Send</button>
     </div>
   </div>
 </div>
