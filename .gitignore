@@ -27,8 +27,8 @@ yarn-error.log*
 .DS_Store
 
 # Secret files
-appsettings.json
-appsettings.Development.json
+# appsettings.json
+# appsettings.Development.json
 
 # Angular files
 node_modules/
