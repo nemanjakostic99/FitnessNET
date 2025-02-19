@@ -1,5 +1,6 @@
 using FitnessNET.Data;
 using FitnessNET.Hubs;
+using FitnessNET.Middlewares;
 using FitnessNET.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ builder.Services.AddScoped<FriendshipService>();
 builder.Services.AddScoped<MessageService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped<IImageProcessingService, ImageProcessingService>();
+builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.Configure(builder.Configuration.GetSection("Kestrel"));
@@ -108,6 +110,8 @@ app.MapHub<ChatHub>("/chatHub");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 app.MapControllers();
 
