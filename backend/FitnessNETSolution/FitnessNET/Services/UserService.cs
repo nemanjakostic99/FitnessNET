@@ -78,7 +78,7 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<bool> UpdateUserProfileAsync(string username, UserProfileDTO updatedProfile)
+    public async Task<bool> UpdateUserProfileAsync(string username, UpdateUserProfileDTO updatedProfile)
     {
         var user = await _dbContext.ClientProfiles.FirstOrDefaultAsync(u => u.Username == username);
 

@@ -18,6 +18,8 @@ namespace FitnessNET.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] ClientRegisterRequestDTO request)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var (success, message, token) = await _authService.RegisterAsync(request);
 
             if (!success)
@@ -31,6 +33,8 @@ namespace FitnessNET.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] ClientLoginRequestDTO request)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var (success, message, token) = await _authService.LoginAsync(request);
 
             if (!success)

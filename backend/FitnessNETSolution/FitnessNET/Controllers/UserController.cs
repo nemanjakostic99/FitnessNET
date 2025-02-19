@@ -68,7 +68,7 @@ namespace FitnessNET.Controllers
 
         [HttpPut("update-profile")]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserProfileDTO userProfileDTO)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileDTO userProfileDTO)
         {
             var username = User.FindFirst("name")?.Value; 
 
@@ -76,6 +76,8 @@ namespace FitnessNET.Controllers
             {
                 return Unauthorized("Username not found in token.");
             }
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             bool result = await this._userService.UpdateUserProfileAsync(username, userProfileDTO);
 

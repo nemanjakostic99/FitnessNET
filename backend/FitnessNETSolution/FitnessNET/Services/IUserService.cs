@@ -7,7 +7,7 @@ namespace FitnessNET.Services
     {
         Task<UserInfoDTO> GetUserInfoAsync(string username);
         Task<UserProfileDTO> GetUserProfileAsync(string username);
-        Task<bool> UpdateUserProfileAsync(string username, UserProfileDTO updatedProfile);
+        Task<bool> UpdateUserProfileAsync(string username, UpdateUserProfileDTO updatedProfile);
         Task UploadProfilePictureAsync(string username, byte[] pictureData, string contentType);
         Task<UserProfilePicture?> GetProfilePictureAsync(string username);
         Task<bool?> DeleteProfilePictureAsync(string username);
